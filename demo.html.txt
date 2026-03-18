@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Chess</title>
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f0f0;
+}
+
+#chess-board {
+  width: 400px; /* Adjust size as needed */
+  height: 400px;
+  border: 2px solid black;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* 8 columns */
+  grid-template-rows: repeat(8, 1fr);    /* 8 rows */
+}
+
+.square {
+  width: 50px; /* Adjust based on board size */
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px; /* Size of chess pieces */
+  cursor: pointer;
+}
+
+.white {
+  background-color: #f0d9b5; /* Light square color */
+}
+
+.black {
+  background-color: #b58863; /* Dark square color */
+}
+
+.selected {
+  background-color: yellow; /* Highlight selected square */
+}
+</style>
+</head>
+<body>
+
+<div id="chess-board"></div>
+
+<script>
+const board = document.getElementById('chess-board');
+const pieces = {
+    'wR': '&#9814;', 'wN': '&#9816;', 'wB': '&#9815;', 'wQ': '&#9813;', 'wK': '&#9812;', 'wP': '&#9817;',
+    'bR': '&#9820;', 'bN': '&#9822;', 'bB': '&#9821;', 'bQ': '&#9819;', 'bK': '&#9818;', 'bP': '&#9823;'
+};
+
+let chessBoardState = [
+    ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+    ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+    ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']
+];
+
+let selectedSquare = null;
+
+function createBoard() {
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const square = document.createElement('div');
+      square.classList.add('square');
+      square.classList.add((row + col) % 2 === 0 ? 'white' : 'black'); // Alternate colors
+      square.dataset.row = row;
+      square.dataset.col = col;
+
+      const piece = chessBoardState[row][col];
+      if (piece) {
+        square.innerHTML = pieces[piece];
+      }
+
+      square.addEventListener('click', handleSquareClick);
+      board.appendChild(square);
+    }
+  }
+}
+
+function handleSquareClick(event) {
+  const row = parseInt(event.target.dataset.row);
+  const col = parseInt(event.target.dataset.col);
+
+  if (selectedSquare) {
+    // Move the piece
+    const startRow = selectedSquare.row;
+    const startCol = selectedSquare.col;
+
+    // Basic move (no validation)
+    chessBoardState[row][col] = chessBoardState[startRow][startCol];
+    chessBoardState[startRow][startCol] = null;
+
+    // Update the board display
+    updateBoard();
+    selectedSquare = null;
+
+  } else {
+    // Select a piece
+    const piece = chessBoardState[row][col];
+    if (piece) { // Only select if there's a piece
+      selectedSquare = { row: row, col: col };
+      //Highlight selected square
+      event.target.classList.add('selected');
+    }
+  }
+}
+
+function updateBoard() {
+  // Clear the board
+  board.innerHTML = '';
+  createBoard();
+}
+
+createBoard();
+</script>
+
+</body>
+</html>
